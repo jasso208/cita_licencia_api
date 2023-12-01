@@ -6,7 +6,8 @@ class Token():
     """
         Devuelve token.
     """
-    def getToken():
+    def getToken(self):
+        print("token")
         now = datetime.now()
         day = now.day
         month = now.month
@@ -20,8 +21,7 @@ class Token():
         s_month = str(month)
         s_hour = str(hour)
         s_minute = str(minute)
-        if(int(second) < 10):
-            s_second = '0' + str(second)
+        s_second = '0' + str(second)
 
 
         if(int(day) < 10):

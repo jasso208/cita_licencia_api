@@ -110,13 +110,19 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-mx'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Mexico_City'
 
 USE_I18N = True
 
 USE_TZ = True
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'jasso.gallegos@gmail.com'
+EMAIL_HOST_PASSWORD = 'hdbkrxmgkhstmnen'
+EMAIL_PORT = 587
 
 
 # Static files (CSS, JavaScript, Images)

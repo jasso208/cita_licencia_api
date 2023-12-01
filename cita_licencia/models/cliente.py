@@ -9,6 +9,8 @@ class Cliente(models.Model):
     email = models.EmailField(max_length = 200,null  = True,blank = True)
     pais_destino = models.CharField(max_length = 50,null  = True,blank = True)
     fecha_viaje = models.DateField(null  = True,blank = True)
+    token = models.CharField(max_length = 14,null = True,blank = True)
+
 
     def __str__(self):
         if(self.nombre == ""):

@@ -3,6 +3,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from cita_licencia.models.cliente import Cliente
 
+from cita_licencia.utils.token import Token
+from cita_licencia.utils.email import Email
 
 '''
     Almacena cliente:
@@ -52,6 +54,20 @@ def validaCliente(request):
         cliente.email = email
         cliente.whatsapp = whatsapp
         cliente.save()
+
+    """
+        Almacena el token generado para autenticarse
+    """
+    t = Token()
+    cliente.token = t.getToken()
+    cliente.save()
+
+    """
+        Enviamos el email por correo
+    """
+    email = Email
+    email.sendMail(cliente.token,cliente.email,"Citas ANA: Valida tu email")
+    
 
     return Response({"estatus":"1","id_cliente":cliente.id})
 
