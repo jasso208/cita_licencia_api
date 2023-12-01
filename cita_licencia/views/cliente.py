@@ -71,7 +71,7 @@ def tokenCliente(request):
     if(cliente.forma_autenticacion == 'W'):
         pass   
 
-    return Response({"estatus":"1","id_cliente":cliente.id})
+    return Response({"estatus":"1","id_cliente":cliente.id,"forma_autenticacion":cliente.forma_autenticacion})
 
 
 """
@@ -79,13 +79,26 @@ def tokenCliente(request):
     Parametros: 
         token
         id_cliente
+        forma_autenticacion: W:whatsapp; E:email
 """
 @api_view(['GET'])
 def validaTokenCliente(request):
     token = request.GET.get("token")
     id_cliente = request.GET.get("id_cliente")
+    forma_autenticacion = request.GET.get("forma_autenticacion")
     try:
         cliente = Cliente.objects.get(id = id_cliente,token = token)
+        if(forma_autenticacion == "E"):
+            cliente.email_validado = 1
+        
+        if(forma_autenticacion == "W"):
+            cliente.whatsapp_validado = 1
+        
+        #una vez validado el token, lo eliminamos para que no se vuelva a usar.
+        cliente.token = ""
+        
+        cliente.save()
+
         data = {
             "id" : cliente.id,
             "nombre" : cliente.nombre,
@@ -94,8 +107,11 @@ def validaTokenCliente(request):
             "whatsapp" : cliente.whatsapp,
             "email" : cliente.email,
             "pais_destino" : cliente.pais_destino,
-            "fecha_viaje" : cliente.fecha_viaje
+            "fecha_viaje" : cliente.fecha_viaje,
+            "whatsapp_validado":cliente.whatsapp_validado,
+            "email_validado":cliente.email_validado
         }
+
         return Response({"estatus":"1","data":data})
     except:
         return Response({"estatus":"0","msj":"Token incorrecto"})
