@@ -4,7 +4,9 @@ __pycache__/
 *$py.class
 
 cita_licencia/migrations/*
-cita_licencia_api/__pycache__/*
+cita_licencia_api/__pycache__/settings.cpython-312.pyc
+*.pyc
+
 # C extensions
 *.so
 
