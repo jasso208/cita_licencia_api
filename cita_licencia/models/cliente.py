@@ -10,7 +10,7 @@ class Cliente(models.Model):
     pais_destino = models.CharField(max_length = 50,null  = True,blank = True)
     fecha_viaje = models.DateField(null  = True,blank = True)
     token = models.CharField(max_length = 14,null = True,blank = True)
-
+    forma_autenticacion = models.CharField(max_length = 1,null = True, blank = True)
 
     def __str__(self):
         if(self.nombre == ""):

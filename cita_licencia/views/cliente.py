@@ -6,17 +6,12 @@ from cita_licencia.models.cliente import Cliente
 from cita_licencia.utils.token import Token
 from cita_licencia.utils.email import Email
 
-'''
-    Almacena cliente:
-        llave: 
-            whatsapp, email
-        * Al identificarse, el cliente debe ingresar al menos whatsapp e el email.
-        * Mientras un email o whatsapp no este confirmado puede ser usado por otro cliente. 
-        * Una vez que el cliente haya generado una cita contara como confirmado, y su correo y whatsapp no podran ser usado por otro cliente.
-        * 
-'''
+
+"""
+    Genera token y lo envia por correo/whatsapp
+"""
 @api_view(['POST'])
-def validaCliente(request):
+def tokenCliente(request):
     whatsapp = ""
     email = ""
     try:
@@ -34,25 +29,29 @@ def validaCliente(request):
     try:
         # Validamos la existencia del cliente por su whatsapp.
         if(whatsapp != ""):
-            cliente = Cliente.objects.get(whatsapp = whatsapp)        
+            cliente = Cliente.objects.get(whatsapp = whatsapp)    
+            cliente.forma_autenticacion = 'W'    
     except:
         # Si el cliente no existe, lo creamos.
         cliente = Cliente()
         cliente.nombre_completo = ""
         cliente.email = email
         cliente.whatsapp = whatsapp
+        cliente.forma_autenticacion = 'W'
         cliente.save()
         
     try:
         # Validamos la existencia del cliente por su email.
         if(email != ""):
             cliente = Cliente.objects.get(email = email)        
+            cliente.forma_autenticacion = 'E'
     except:
         # Si el cliente no existe, lo creamos.
         cliente = Cliente()        
         cliente.nombre_completo = ""
         cliente.email = email
         cliente.whatsapp = whatsapp
+        cliente.forma_autenticacion = 'E'
         cliente.save()
 
     """
@@ -62,16 +61,45 @@ def validaCliente(request):
     cliente.token = t.getToken()
     cliente.save()
 
-    """
-        Enviamos el email por correo
-    """
-    email = Email
-    email.sendMail(cliente.token,cliente.email,"Citas ANA: Valida tu email")
-    
+    if(cliente.forma_autenticacion == 'E'):
+        """
+            Enviamos el email por correo
+        """
+        email = Email
+        email.sendMail(cliente.token,cliente.email,"Citas ANA: Valida tu email")
+
+    if(cliente.forma_autenticacion == 'W'):
+        pass   
 
     return Response({"estatus":"1","id_cliente":cliente.id})
 
 
+"""
+    Valida el token que se le envio al cliente por correo.
+    Parametros: 
+        token
+        id_cliente
+"""
+@api_view(['GET'])
+def validaTokenCliente(request):
+    token = request.GET.get("token")
+    id_cliente = request.GET.get("id_cliente")
+    try:
+        cliente = Cliente.objects.get(id = id_cliente,token = token)
+        data = {
+            "id" : cliente.id,
+            "nombre" : cliente.nombre,
+            "apellido_p" : cliente.apellido_p,
+            "apellido_m" : cliente.apellido_m,
+            "whatsapp" : cliente.whatsapp,
+            "email" : cliente.email,
+            "pais_destino" : cliente.pais_destino,
+            "fecha_viaje" : cliente.fecha_viaje
+        }
+        return Response({"estatus":"1","data":data})
+    except:
+        return Response({"estatus":"0","msj":"Token incorrecto"})
+    
 """
     Actualiza la información del cliente.
 """
