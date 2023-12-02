@@ -13,7 +13,7 @@ class Cliente(models.Model):
     fecha_viaje = models.DateField(null  = True,blank = True)
     token = models.CharField(max_length = 14,null = True,blank = True)
     forma_autenticacion = models.CharField(max_length = 1,null = True, blank = True)
-
+    administrador = models.CharField(max_length = 1,default = 0)
     def __str__(self):
         if(self.nombre == ""):
             return "No name"

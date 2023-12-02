@@ -12,7 +12,7 @@ from cita_licencia.utils.email import Email
 """
 @api_view(['POST'])
 def tokenCliente(request):
-    whatsapp = ""
+    whatsapp = "0"
     email = ""
     try:
         whatsapp = request.data["whatsapp"]    
@@ -22,14 +22,17 @@ def tokenCliente(request):
         email = request.data["email"]
     except:
         pass
-
-    if (email == "" and whatsapp == ""):
+    
+    if(whatsapp == ""):
+        whatsapp = "0"
+        
+    if (email == "" and whatsapp == "0"):
         return Response({"estatus":0,"msj":"Debe indicar el Whatsapp o Email."})
 
     try:
         # Validamos la existencia del cliente por su whatsapp.
-        if(whatsapp != ""):
-            cliente = Cliente.objects.get(whatsapp = whatsapp)    
+        if(whatsapp != "0"):
+            cliente = Cliente.objects.get(whatsapp = int(whatsapp))    
             cliente.forma_autenticacion = 'W'    
     except:
         # Si el cliente no existe, lo creamos.
