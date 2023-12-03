@@ -8,6 +8,8 @@ from .views.cliente import validaTokenCliente
 from .views.calendario import cargaDiasMes
 from .views.calendario import getHorariosLibres
 
+from.views.cita import generaCita
+
 urlpatterns = [
     path("allClientes",viewsr.getClientes),
 
@@ -18,7 +20,10 @@ urlpatterns = [
     
     #Calendario
     path("calendario/cargaDiasMes",cargaDiasMes),
-    path("calendario/horariosLibres",getHorariosLibres)
+    path("calendario/horariosLibres",getHorariosLibres),
+
+    #cita
+    path("cita/generaCita",generaCita)
     
     
 ]
