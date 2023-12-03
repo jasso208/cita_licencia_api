@@ -127,7 +127,7 @@ def validaTokenCliente(request):
 @api_view(['PUT'])
 def actualizaCliente(request):
     try:
-        id = request.data["id"]
+        id = request.data["id_cliente"]
         nombre = request.data["nombre"]
         apellido_p = request.data["apellido_p"]
         apellido_m = request.data["apellido_m"]
@@ -157,6 +157,7 @@ def actualizaCliente(request):
         cliente.save()
         
         return Response({"estatus":"1","msj":"OK"})
-    except:
+    except Exception as e:
+        print(e)
         return Response({"estatus":"0","msj":"Error al actualizar el cliente."})
 
