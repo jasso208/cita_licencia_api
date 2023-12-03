@@ -9,6 +9,7 @@ from cita_licencia.utils.email import Email
 
 """
     Genera token y lo envia por correo/whatsapp
+    Mejora pendiente: se deben ingresar ambos: whatsapp y correo electronico
 """
 @api_view(['POST'])
 def tokenCliente(request):
@@ -25,7 +26,7 @@ def tokenCliente(request):
     
     if(whatsapp == ""):
         whatsapp = "0"
-        
+
     if (email == "" and whatsapp == "0"):
         return Response({"estatus":0,"msj":"Debe indicar el Whatsapp o Email."})
 
@@ -112,7 +113,8 @@ def validaTokenCliente(request):
             "pais_destino" : cliente.pais_destino,
             "fecha_viaje" : cliente.fecha_viaje,
             "whatsapp_validado":cliente.whatsapp_validado,
-            "email_validado":cliente.email_validado
+            "email_validado":cliente.email_validado,
+            "administrador":cliente.administrador
         }
 
         return Response({"estatus":"1","data":data})

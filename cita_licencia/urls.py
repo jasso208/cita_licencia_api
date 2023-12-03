@@ -6,6 +6,7 @@ from .views.cliente import actualizaCliente
 from .views.cliente import validaTokenCliente
 
 from .views.calendario import cargaDiasMes
+from .views.calendario import getHorariosLibres
 
 urlpatterns = [
     path("allClientes",viewsr.getClientes),
@@ -16,6 +17,8 @@ urlpatterns = [
     path("cliente/actualizaCliente",actualizaCliente),
     
     #Calendario
-    path("calendario/cargaDiasMes",cargaDiasMes)
+    path("calendario/cargaDiasMes",cargaDiasMes),
+    path("calendario/horariosLibres",getHorariosLibres)
+    
     
 ]

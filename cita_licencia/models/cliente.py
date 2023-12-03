@@ -14,6 +14,10 @@ class Cliente(models.Model):
     token = models.CharField(max_length = 14,null = True,blank = True)
     forma_autenticacion = models.CharField(max_length = 1,null = True, blank = True)
     administrador = models.CharField(max_length = 1,default = 0)
+    
+    class Meta:
+        unique_together = ('whatsapp','email')
+        
     def __str__(self):
         if(self.nombre == ""):
             return "No name"
