@@ -5,45 +5,25 @@ from cita_licencia.models.cliente import Cliente
 
 from cita_licencia.utils.token import Token
 from cita_licencia.utils.email import Email
-
+from cita_licencia.utils.whatsapp import Whatsapp
 
 """
-    Genera token y lo envia por correo/whatsapp
+    Genera token y lo envia por correo
     Mejora pendiente: se deben ingresar ambos: whatsapp y correo electronico
 """
 @api_view(['POST'])
 def tokenCliente(request):
     whatsapp = "0"
     email = ""
+
     try:
-        whatsapp = request.data["whatsapp"]    
+        email = request.data["email"].lower()
     except:
         pass
-    try:
-        email = request.data["email"]
-    except:
-        pass
-    
-    if(whatsapp == ""):
-        whatsapp = "0"
 
     if (email == "" and whatsapp == "0"):
         return Response({"estatus":0,"msj":"Debe indicar el Whatsapp o Email."})
-
-    try:
-        # Validamos la existencia del cliente por su whatsapp.
-        if(whatsapp != "0"):
-            cliente = Cliente.objects.get(whatsapp = int(whatsapp))    
-            cliente.forma_autenticacion = 'W'    
-    except:
-        # Si el cliente no existe, lo creamos.
-        cliente = Cliente()
-        cliente.nombre_completo = ""
-        cliente.email = email
-        cliente.whatsapp = whatsapp
-        cliente.forma_autenticacion = 'W'
-        cliente.save()
-        
+   
     try:
         # Validamos la existencia del cliente por su email.
         if(email != ""):
@@ -69,13 +49,60 @@ def tokenCliente(request):
         """
             Enviamos el email por correo
         """
-        email = Email
+        email = Email()
         email.sendMail(cliente.token,cliente.email,"Citas ANA: Valida tu email")
 
-    if(cliente.forma_autenticacion == 'W'):
-        pass   
-
     return Response({"estatus":"1","id_cliente":cliente.id,"forma_autenticacion":cliente.forma_autenticacion})
+
+
+"""
+    Valida el token
+"""
+@api_view(['POST'])
+def tokenClienteWhatsapp(request):
+    whatsapp = ""
+    id_cliente = request.data["id_cliente"]
+    try:
+        whatsapp = request.data["whatsapp"]    
+    except:
+        pass
+    
+    if(whatsapp == ""):
+        whatsapp = "0"
+    
+
+    if (whatsapp == "0"):
+        return Response({"estatus":0,"msj":"Debe indicar el Whatsapp o Email."})
+    
+    #validamos que el whatsapp no este verificado por otro cliente
+    try:
+        cl = Cliente.objects.get(whatsapp = whatsapp)
+        print(cl.id)
+        print(id_cliente)
+        if(cl.id != int(id_cliente)):
+            if(cl.whatsapp_validado == 1):
+                return Response({"estatus":"0","msj":"El whatsapp fue registrado por otro cliente."})
+    except:
+        pass
+
+    cliente = Cliente.objects.get(id = id_cliente)
+    cliente.whatsapp = whatsapp
+    cliente.forma_autenticacion = 'W'
+    cliente.save()
+    
+    """
+        Almacena el token generado para autenticarse
+    """
+    t = Token()
+    cliente.token = t.getToken()
+    cliente.save()
+
+    if(cliente.forma_autenticacion == 'W'):
+        whatsapp = Whatsapp()
+        whatsapp.sendWhatsapp(cliente.token,cliente.whatsapp)
+    
+    return Response({"estatus":"1","id_cliente":cliente.id,"forma_autenticacion":cliente.forma_autenticacion})
+
 
 
 """

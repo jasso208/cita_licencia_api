@@ -2,6 +2,7 @@ from django.urls import path
 from . import viewsr
 
 from .views.cliente import tokenCliente
+from .views.cliente import tokenClienteWhatsapp
 from .views.cliente import actualizaCliente
 from .views.cliente import validaTokenCliente
 
@@ -15,6 +16,7 @@ urlpatterns = [
 
     #Cliente
     path("cliente/tokenCliente",tokenCliente),
+    path("cliente/tokenClienteWhatsapp",tokenClienteWhatsapp),
     path("cliente/validaTokenCliente",validaTokenCliente),
     path("cliente/actualizaCliente",actualizaCliente),
     

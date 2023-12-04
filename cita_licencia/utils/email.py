@@ -11,7 +11,7 @@ class Email():
                 0: cuando se presentaron errores para enviar correo.
 
     """
-    def sendMail(body,email_cliente,asunto):
+    def sendMail(self,body,email_cliente,asunto):
         try:
             server = smtplib.SMTP('smtp.gmail.com:587')
             msg = email.message.Message()

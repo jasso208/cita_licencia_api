@@ -121,11 +121,17 @@ USE_I18N = True
 
 USE_TZ = True
 
+#credenciales Email
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'jasso.gallegos@gmail.com'
 EMAIL_HOST_PASSWORD = 'hdbkrxmgkhstmnen'
 EMAIL_PORT = 587
+
+#Credenciales whatsapp
+TOKEN = "arxe7f2p034ysdym"
+INSTANCE = "instance70502"
+URL = "https://api.ultramsg.com/instance70502/messages/chat"
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
