@@ -10,6 +10,8 @@ cita_licencia_api/__pycache__/settings.cpython-312.pyc
 # C extensions
 *.so
 
+cita_licencia_api/settings.py
+
 # Distribution / packaging
 .Python
 build/

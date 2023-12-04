@@ -121,6 +121,7 @@ USE_I18N = True
 
 USE_TZ = True
 
+
 #credenciales Email
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
