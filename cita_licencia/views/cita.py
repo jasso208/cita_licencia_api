@@ -41,12 +41,13 @@ def generaCita(request):
     except:
         return Response({"estatus":"0","msj":"Error al generar la cita. Horario no disponible."})
     
-    print(cliente.whatsapp)
-    print(whatsapp)
-    print(cliente.email)
-    print(email)
-    if(str(cliente.whatsapp).strip() != whatsapp.strip() or cliente.email.strip() != email.strip()):
-        return Response({"estatus":"0","msj":"El email y/o whatsapp no corresponden con el cliente indicado."})
+    if(cliente.whatsapp != None and cliente.whatsapp != 0):
+        if(str(cliente.whatsapp).strip() != whatsapp.strip() or cliente.email.strip() != email.strip()):
+            return Response({"estatus":"0","msj":"El email y/o whatsapp no corresponden con el cliente indicado."})
+    else:
+        if(cliente.email.strip() != email.strip()):
+            return Response({"estatus":"0","msj":"El email no corresponden con el cliente indicado."})
+    
     
     cita = Cita()
     cita.nombre = nombre
