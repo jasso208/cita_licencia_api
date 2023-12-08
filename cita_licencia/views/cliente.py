@@ -22,7 +22,7 @@ def tokenCliente(request):
         pass
 
     if (email == "" and whatsapp == "0"):
-        return Response({"estatus":0,"msj":"Debe indicar el Whatsapp o Email."})
+        return Response({"estatus":0,"msj":"Debe indicar el correo electrónico."})
    
     try:
         # Validamos la existencia del cliente por su email.
@@ -72,7 +72,7 @@ def tokenClienteWhatsapp(request):
     
 
     if (whatsapp == "0"):
-        return Response({"estatus":0,"msj":"Debe indicar el Whatsapp o Email."})
+        return Response({"estatus":0,"msj":"Debe indicar el número de whatsapp."})
     
     #validamos que el whatsapp no este verificado por otro cliente
     try:
