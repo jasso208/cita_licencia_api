@@ -72,7 +72,7 @@ def tokenClienteWhatsapp(request):
     
 
     if (whatsapp == "0"):
-        return Response({"estatus":0,"msj":"Debe indicar el correo numero de whatsapp."})
+        return Response({"estatus":0,"msj":"Debe indicar el número de whatsapp."})
     
     #validamos que el whatsapp no este verificado por otro cliente
     try:
