@@ -80,11 +80,11 @@ def generaCita(request):
 """
 @api_view(['GET'])
 def getCitas(request):
-    whatsapp = request.GET.get("whatsapp")
+    email = request.GET.get("email")
     try:
-        cliente = Cliente.objects.get(whatsapp = whatsapp)
+        cliente = Cliente.objects.get(email = email)
     except: 
-        return Response({"estatus":"0","msj":"El cliente ligado al número de whatsapp: " + whatsapp + ", no existe."})
+        return Response({"estatus":"0","msj":"El cliente ligado al correo electónico: " + email + ", no existe."})
     
     citas = Cita.objects.filter(cliente = cliente).values("fecha_viaje","horario_cita__fecha__fecha","horario_cita__horario","pais_destino")
     return Response({"estatus":"0","data":citas})
