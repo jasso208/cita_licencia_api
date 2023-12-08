@@ -69,3 +69,23 @@ def generaCita(request):
 
     return Response({"estatus":"1","data":cita_nueva})
 
+
+
+"""
+
+    Regresa las citas de un cliente.
+    Se valida a travez de whatsapp.
+    Parametros:
+        whatsapp:
+"""
+@api_view(['GET'])
+def getCitas(request):
+    whatsapp = request.GET.get("whatsapp")
+    try:
+        cliente = Cliente.objects.get(whatsapp = whatsapp)
+    except: 
+        return Response({"estatus":"0","msj":"El cliente ligado al número de whatsapp: " + whatsapp + ", no existe."})
+    
+    citas = Cita.objects.filter(cliente = cliente).values("fecha_viaje","horario_cita__fecha__fecha","horario_cita__horario","pais_destino")
+    return Response({"estatus":"0","data":citas})
+
