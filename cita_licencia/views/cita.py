@@ -3,7 +3,11 @@ from rest_framework.response import Response
 from cita_licencia.models.cliente import Cliente
 from cita_licencia.models.horario_dia import HorarioDia
 from cita_licencia.models.cita import Cita
+from cita_licencia.models.estatus_cita import EstatusCita
+from django.core.paginator import Paginator
 
+
+import datetime
 
 """
     Genera nueva cita.
@@ -59,6 +63,7 @@ def generaCita(request):
     cita.fecha_viaje = fecha_viaje
     cita.cliente = cliente
     cita.horario_cita = hora_cita
+    cita.estatus_cita = EstatusCita.objects.get(id=1)
     cita.save()
 
     hora_cita.cliente_reserva = cliente
@@ -81,11 +86,38 @@ def generaCita(request):
 @api_view(['GET'])
 def getCitas(request):
     email = request.GET.get("email")
+    solo_activas = request.GET.get("solo_activas")
+    page = request.GET.get("num_page")
+
     try:
         cliente = Cliente.objects.get(email = email)
     except: 
         return Response({"estatus":"0","msj":"El cliente ligado al correo electónico: " + email + ", no existe."})
     
-    citas = Cita.objects.filter(cliente = cliente).values("fecha_viaje","horario_cita__fecha__fecha","horario_cita__horario","pais_destino")
-    return Response({"estatus":"0","data":citas})
+    citas1 = Cita.objects.filter(cliente = cliente,estatus_cita = EstatusCita.objects.get(id=1))
+    
+    today = datetime.datetime.now().date()
+
+    for c in citas1:
+        if(c.horario_cita.fecha.fecha < today):
+            c.estatus_cita = EstatusCita.objects.get(id = 2) # vencida
+            c.save()
+
+    print(solo_activas)
+    if(solo_activas == "true"):
+        estatus_activo = EstatusCita.objects.get(id = 1)
+        citas = Cita.objects.filter(cliente = cliente,estatus_cita = estatus_activo).values("fecha_viaje","horario_cita__fecha__fecha","horario_cita__horario","pais_destino","estatus_cita__estatus","estatus_cita__id").order_by("-horario_cita__fecha__fecha","horario_cita__horario")
+    else:
+        citas = Cita.objects.filter(cliente = cliente).values("fecha_viaje","horario_cita__fecha__fecha","horario_cita__horario","pais_destino","estatus_cita__estatus","estatus_cita__id").order_by("-horario_cita__fecha__fecha","horario_cita__horario")
+    
+    p = Paginator(citas,5)
+
+    print(p.get_page(page).previous_page_number)
+    
+    pagination = {
+        "total_pages":p.num_pages
+    }
+
+    
+    return Response({"estatus":"1","data":p.get_page(page).object_list,"pagination":pagination})
 
