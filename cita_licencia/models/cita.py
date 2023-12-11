@@ -8,7 +8,7 @@ class Cita(models.Model):
     nombre = models.CharField(max_length = 100,null  = True,blank = True,default = "")
     apellido_p = models.CharField(max_length = 100, null = True,blank = True,default  = "")
     apellido_m = models.CharField(max_length = 100,null = True,blank = True,default = "")
-    whatsapp = models.IntegerField(max_length = 10,null  = True,blank = True)
+    whatsapp = models.CharField(max_length = 15,null  = True,blank = True)
     email = models.EmailField(max_length = 200,null  = True,blank = True)
     pais_destino = models.CharField(max_length = 50,null  = True,blank = True)
     fecha_viaje = models.DateField(null  = True,blank = True)

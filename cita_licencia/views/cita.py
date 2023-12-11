@@ -74,6 +74,17 @@ def generaCita(request):
 
     return Response({"estatus":"1","data":cita_nueva})
 
+"""
+    Consulta cita
+"""
+@api_view(["GET"])
+def consultaCita(request):
+    id_cita = request.GET.get("id_cita")
+    
+    print(id_cita)
+    cita = Cita.objects.filter(id = id_cita).values("nombre","apellido_p","apellido_m","email","whatsapp","pais_destino","fecha_viaje","horario_cita__id","horario_cita__horario","horario_cita__fecha__fecha","cliente")
+    
+    return Response({"estatus":"1","data":cita})
 
 
 """
@@ -106,9 +117,9 @@ def getCitas(request):
     print(solo_activas)
     if(solo_activas == "true"):
         estatus_activo = EstatusCita.objects.get(id = 1)
-        citas = Cita.objects.filter(cliente = cliente,estatus_cita = estatus_activo).values("fecha_viaje","horario_cita__fecha__fecha","horario_cita__horario","pais_destino","estatus_cita__estatus","estatus_cita__id").order_by("-horario_cita__fecha__fecha","horario_cita__horario")
+        citas = Cita.objects.filter(cliente = cliente,estatus_cita = estatus_activo).values("id","fecha_viaje","horario_cita__fecha__fecha","horario_cita__horario","pais_destino","estatus_cita__estatus","estatus_cita__id").order_by("estatus_cita__id","-horario_cita__fecha__fecha","horario_cita__horario","-id")
     else:
-        citas = Cita.objects.filter(cliente = cliente).values("fecha_viaje","horario_cita__fecha__fecha","horario_cita__horario","pais_destino","estatus_cita__estatus","estatus_cita__id").order_by("-horario_cita__fecha__fecha","horario_cita__horario")
+        citas = Cita.objects.filter(cliente = cliente).values("id","fecha_viaje","horario_cita__fecha__fecha","horario_cita__horario","pais_destino","estatus_cita__estatus","estatus_cita__id").order_by("estatus_cita__id","-horario_cita__fecha__fecha","horario_cita__horario","-id")
     
     p = Paginator(citas,5)
 
@@ -121,3 +132,64 @@ def getCitas(request):
     
     return Response({"estatus":"1","data":p.get_page(page).object_list,"pagination":pagination})
 
+
+
+"""
+Actualiza cita
+"""
+@api_view(["PUT"])
+def actualizaCita(request):
+    id_cita = request.data["id_cita"]
+    id_horario_cita = request.data["id_horario_cita"]
+    nombre = request.data["nombre"]
+    apellido_p = request.data["apellido_p"]
+    apellido_m = request.data["apellido_m"]
+    whatsapp = request.data["whatsapp"]
+    email = request.data["email"]
+    pais_destino = request.data["pais_destino"]
+    fecha_viaje = request.data["fecha_viaje"]
+    cancelar_cita = request.data["cancelar_cita"]
+    
+    try:
+        cita = Cita.objects.get(id = id_cita)
+    except:
+        return Response({"estatus":"0","msj":"Error al actualizar la cita. Cita no encontrada."})
+
+    if(cita.horario_cita.id != id_horario_cita):
+        try:
+            hora_cita = HorarioDia.objects.get(id = id_horario_cita,disponible = 1)
+        except:
+            return Response({"estatus":"0","msj":"Error al actualizar la cita. Horario no disponible."})
+    else:
+        hora_cita = cita.horario_cita
+
+    #Volvemos a poner disponible la el horario que tenia la cita
+    cita.horario_cita.disponible = 1
+    cita.horario_cita.cliente_reserva = None
+    cita.horario_cita.save()
+
+
+    if(cancelar_cita == 1):
+        print("cancelar cita")
+        cita.estatus_cita = EstatusCita.objects.get(id=3)  #cancelada
+        cita.save()
+        return Response({"estatus":"1","msj":"Cita cancelada correctamente."})
+    
+    cita.nombre = nombre
+    cita.apellido_p = apellido_p
+    cita.apellido_m = apellido_m
+    #cita.whatsapp = whatsapp
+    #cita.email = email
+    cita.pais_destino = pais_destino
+    cita.fecha_viaje = fecha_viaje
+    cita.horario_cita = hora_cita
+    cita.estatus_cita = EstatusCita.objects.get(id=1) #activa
+    cita.save()
+
+    hora_cita.cliente_reserva = cita.cliente
+    hora_cita.disponible = 0
+    hora_cita.save()
+
+    cita_nueva = Cita.objects.filter(id = cita.id).values("nombre","apellido_p","apellido_m","email","whatsapp","pais_destino","fecha_viaje","horario_cita","cliente")
+
+    return Response({"estatus":"1","data":cita_nueva})

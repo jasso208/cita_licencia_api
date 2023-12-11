@@ -5,7 +5,7 @@ class Cliente(models.Model):
     nombre = models.CharField(max_length = 100,null  = True,blank = True,default = "")
     apellido_p = models.CharField(max_length = 100, null = True,blank = True,default  = "")
     apellido_m = models.CharField(max_length = 100,null = True,blank = True,default = "")
-    whatsapp = models.IntegerField(max_length = 10,null  = True,blank = True)
+    whatsapp = models.CharField(max_length = 15,null  = True,blank = True)
     whatsapp_validado = models.IntegerField(default = 0)#1 para indicar que ya se valido el whatsapp
     email = models.EmailField(max_length = 200,null  = True,blank = True)
     email_validado = models.IntegerField(default = 0) #1 para indicar que ya se valido  el email

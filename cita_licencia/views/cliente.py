@@ -117,6 +117,7 @@ def validaTokenCliente(request):
     token = request.GET.get("token")
     id_cliente = request.GET.get("id_cliente")
     forma_autenticacion = request.GET.get("forma_autenticacion")
+    print(token)
     try:
         cliente = Cliente.objects.get(id = id_cliente,token = token)
         if(forma_autenticacion == "E"):
@@ -146,6 +147,7 @@ def validaTokenCliente(request):
 
         return Response({"estatus":"1","data":data})
     except:
+
         return Response({"estatus":"0","msj":"Token incorrecto"})
     
 """
