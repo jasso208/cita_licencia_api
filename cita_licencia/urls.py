@@ -11,6 +11,8 @@ from .views.calendario import getHorariosLibres
 
 from .views.cita import generaCita
 from .views.cita import getCitas
+from .views.cita import consultaCita
+from .views.cita import actualizaCita
 
 urlpatterns = [
     path("allClientes",viewsr.getClientes),
@@ -27,7 +29,10 @@ urlpatterns = [
 
     #cita
     path("cita/generaCita",generaCita),
-    path("cita/getCitas",getCitas)
+    path("cita/getCitas",getCitas),
+    path("cita/consultaCita",consultaCita),
+    path("cita/actualizaCita",actualizaCita)
+    
 
     
     
