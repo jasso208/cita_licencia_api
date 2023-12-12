@@ -13,7 +13,7 @@ from cita_licencia.utils.whatsapp import Whatsapp
 """
 @api_view(['POST'])
 def tokenCliente(request):
-    whatsapp = "0"
+    whatsapp = ""
     email = ""
 
     try:
@@ -21,7 +21,7 @@ def tokenCliente(request):
     except:
         pass
 
-    if (email == "" and whatsapp == "0"):
+    if (email == ""):
         return Response({"estatus":0,"msj":"Debe indicar el correo electrónico."})
    
     try:
@@ -81,7 +81,7 @@ def tokenClienteWhatsapp(request):
         print(id_cliente)
         if(cl.id != int(id_cliente)):
             if(cl.whatsapp_validado == 1):
-                return Response({"estatus":"0","msj":"El whatsapp fue registrado por otro cliente."})
+                return Response({"estatus":"0","msj":"El número de whatsapp fue registrado por otro cliente."})
     except:
         pass
 
@@ -131,6 +131,10 @@ def validaTokenCliente(request):
         
         cliente.save()
 
+        fecha_viaje = cliente.fecha_viaje
+        if(fecha_viaje == None):
+            fecha_viaje = ''
+
         data = {
             "id" : cliente.id,
             "nombre" : cliente.nombre,
@@ -139,7 +143,7 @@ def validaTokenCliente(request):
             "whatsapp" : cliente.whatsapp,
             "email" : cliente.email,
             "pais_destino" : cliente.pais_destino,
-            "fecha_viaje" : cliente.fecha_viaje,
+            "fecha_viaje" : fecha_viaje,
             "whatsapp_validado":cliente.whatsapp_validado,
             "email_validado":cliente.email_validado,
             "administrador":cliente.administrador
