@@ -5,6 +5,7 @@ from .views.cliente import tokenCliente
 from .views.cliente import tokenClienteWhatsapp
 from .views.cliente import actualizaCliente
 from .views.cliente import validaTokenCliente
+from .views.cliente import validaClienteAdmin
 
 from .views.calendario import cargaDiasMes
 from .views.calendario import getHorariosLibres
@@ -22,6 +23,9 @@ urlpatterns = [
     path("cliente/tokenClienteWhatsapp",tokenClienteWhatsapp),
     path("cliente/validaTokenCliente",validaTokenCliente),
     path("cliente/actualizaCliente",actualizaCliente),
+    path("cliente/validaClienteAdmin",validaClienteAdmin),
+    
+
     
     #Calendario
     path("calendario/cargaDiasMes",cargaDiasMes),

@@ -194,3 +194,13 @@ def actualizaCliente(request):
         print(e)
         return Response({"estatus":"0","msj":"Error al actualizar el cliente."})
 
+
+@api_view(["GET"])
+def validaClienteAdmin(request):
+    try:
+        id_cliente = request.GET.get("id_cliente")
+        cliente = Cliente.objects.get(id = id_cliente)
+
+        return Response({"estatus":"1","admin":cliente.administrador})
+    except:
+        return Response({"estatus":"0","msj":"Error al consultar el cliente."})
