@@ -133,6 +133,52 @@ def getCitas(request):
     return Response({"estatus":"1","data":p.get_page(page).object_list,"pagination":pagination})
 
 
+"""
+
+    Regresa todas las citas
+    es consumido desde el perfil de administrador.
+    parametros:
+        fecha
+        whatsapp/email
+        solo_activas
+"""
+@api_view(['GET'])
+def getAllCitas(request):
+    fecha = request.GET.get("fecha")
+    solo_activas = request.GET.get("solo_activas")
+    page = request.GET.get("num_page")
+   
+    print(fecha)
+    citas1 = Cita.objects.filter(horario_cita__fecha__fecha = fecha)
+    
+    today = datetime.datetime.now().date()
+
+    for c in citas1:
+        if(c.horario_cita.fecha.fecha < today):
+            c.estatus_cita = EstatusCita.objects.get(id = 2) # vencida
+            c.save()
+
+    if(solo_activas == "true"):
+        estatus_activo = EstatusCita.objects.get(id = 1)
+        citas = Cita.objects.filter(horario_cita__fecha__fecha = fecha,estatus_cita = estatus_activo).values("id","fecha_viaje","horario_cita__fecha__fecha","horario_cita__horario","pais_destino","estatus_cita__estatus","estatus_cita__id").order_by("estatus_cita__id","-horario_cita__fecha__fecha","horario_cita__horario","-id")
+    else:
+        citas = Cita.objects.filter(horario_cita__fecha__fecha = fecha).values("id","fecha_viaje","horario_cita__fecha__fecha","horario_cita__horario","pais_destino","estatus_cita__estatus","estatus_cita__id").order_by("estatus_cita__id","-horario_cita__fecha__fecha","horario_cita__horario","-id")
+    
+    p = Paginator(citas,5)
+
+    print(p.get_page(page).previous_page_number)
+    
+    pagination = {
+        "total_pages":p.num_pages
+    }
+
+    
+    return Response({"estatus":"1","data":p.get_page(page).object_list,"pagination":pagination})
+
+
+
+
+
 
 """
 Actualiza cita
