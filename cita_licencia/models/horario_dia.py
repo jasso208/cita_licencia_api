@@ -7,7 +7,7 @@ class HorarioDia(models.Model):
     consecutivo = models.CharField(max_length = 20)
     horario = models.CharField(max_length = 20)
     disponible = models.IntegerField()
-    cliente_reserva = models.ForeignKey(Cliente,on_delete = models.CASCADE,null = True,blank = True)
+    cliente_reserva = models.ForeignKey(Cliente,on_delete = models.PROTECT,null = True,blank = True)
 
 
     def __str__(self):
