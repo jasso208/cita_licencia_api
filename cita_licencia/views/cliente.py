@@ -61,7 +61,8 @@ def tokenCliente(request):
 @api_view(['POST'])
 def tokenClienteWhatsapp(request):
     whatsapp = ""
-    id_cliente = request.data["id_cliente"]
+    #id_cliente = request.data["id_cliente"]
+    email = request.data["email"]
     try:
         whatsapp = request.data["whatsapp"]    
     except:
@@ -74,6 +75,9 @@ def tokenClienteWhatsapp(request):
     if (whatsapp == "0"):
         return Response({"estatus":0,"msj":"Debe indicar el número de whatsapp."})
     
+    if(email == "" or email == None):
+        return Response({"estatus":"0","msj":"Debe indicar un email."})
+    
     #validamos que el whatsapp no este verificado por otro cliente
     try:
         cl = Cliente.objects.get(whatsapp = whatsapp)
@@ -84,6 +88,26 @@ def tokenClienteWhatsapp(request):
                 return Response({"estatus":"0","msj":"El número de whatsapp fue registrado por otro cliente."})
     except:
         pass
+
+    
+    #validamos que el whatsapp no este verificado por otro cliente
+    try:
+        cl = Cliente.objects.get(whatsapp = whatsapp,email = email)
+        id_cliente = cl.id
+    except:
+        #el correo esta ligado a un cliente pero el whatsapp no esta validado
+        cl = Cliente.objects.get(email = email,whatsapp_validado = 0)
+        id_cliente = cl.id
+        try:
+            cl2 = Cliente.objects.get(whatsapp = whatsapp)
+            if(cl2.id != int(id_cliente)):
+                #Si el otro cliente ya ha validado el whatsapp, no puede ser validado por este cliente.
+                if(cl2.whatsapp_validado == 1):
+                    return Response({"estatus":"0","msj":"El número de whatsapp fue registrado por otro cliente."})
+        except:
+            pass  
+
+
 
     cliente = Cliente.objects.get(id = id_cliente)
     cliente.whatsapp = whatsapp
