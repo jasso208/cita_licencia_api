@@ -16,6 +16,7 @@ from .views.cita import consultaCita
 from .views.cita import actualizaCita
 
 from .views.cita import getAllCitas
+from .views.pais import getAllPais
 
 urlpatterns = [
     path("allClientes",viewsr.getClientes),
@@ -38,9 +39,11 @@ urlpatterns = [
     path("cita/getCitas",getCitas),
     path("cita/getAllCitas",getAllCitas),
     path("cita/consultaCita",consultaCita),
-    path("cita/actualizaCita",actualizaCita)
+    path("cita/actualizaCita",actualizaCita),
     
 
+    #Pais
+    path("pais/getAllPais",getAllPais)
     
     
     
