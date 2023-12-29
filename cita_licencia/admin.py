@@ -6,6 +6,7 @@ from .models.horario_dia import HorarioDia
 from .models.cita import Cita
 from .models.estatus_cita import EstatusCita
 from .models.pais import Pais
+from .models.pais_derecho_admision import PaisDerechoAdmision
 
 admin.site.register(Cliente)
 admin.site.register(Calendario)
@@ -14,3 +15,4 @@ admin.site.register(HorarioDia)
 admin.site.register(Cita)
 admin.site.register(EstatusCita)
 admin.site.register(Pais)
+admin.site.register(PaisDerechoAdmision)
