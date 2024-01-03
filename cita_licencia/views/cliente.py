@@ -6,6 +6,7 @@ from cita_licencia.models.cliente import Cliente
 from cita_licencia.utils.token import Token
 from cita_licencia.utils.email import Email
 from cita_licencia.utils.whatsapp import Whatsapp
+from cita_licencia.models.codigo_pais import CodigoPais
 
 """
     Genera token y lo envia por correo
@@ -63,14 +64,22 @@ def tokenClienteWhatsapp(request):
     whatsapp = ""
     #id_cliente = request.data["id_cliente"]
     email = request.data["email"]
+    codigo_pais=""
+    whatsapp= ""
     try:
-        whatsapp = request.data["whatsapp"]    
+        whatsapp = request.data["whatsapp"]   
+        codigo_pais = request.data["codigo_pais"] 
     except:
         pass
     
     if(whatsapp == ""):
         whatsapp = "0"
-    
+
+    print(codigo_pais)
+    try:
+        cp = CodigoPais.objects.get(id = codigo_pais)
+    except:
+        return Response({"estatus":"0","msj":"código internacional de whatsapp incorrecto."}) 
 
     if (whatsapp == "0"):
         return Response({"estatus":0,"msj":"Debe indicar el número de whatsapp."})
@@ -80,9 +89,7 @@ def tokenClienteWhatsapp(request):
     
     #validamos que el whatsapp no este verificado por otro cliente
     try:
-        cl = Cliente.objects.get(whatsapp = whatsapp)
-        print(cl.id)
-        print(id_cliente)
+        cl = Cliente.objects.get(codigo_pais = cp, whatsapp = whatsapp)
         if(cl.id != int(id_cliente)):
             if(cl.whatsapp_validado == 1):
                 return Response({"estatus":"0","msj":"El número de whatsapp fue registrado por otro cliente."})
@@ -92,14 +99,14 @@ def tokenClienteWhatsapp(request):
     
     #validamos que el whatsapp no este verificado por otro cliente
     try:
-        cl = Cliente.objects.get(whatsapp = whatsapp,email = email)
+        cl = Cliente.objects.get(codigo_pais = cp,whatsapp = whatsapp,email = email)
         id_cliente = cl.id
     except:
         #el correo esta ligado a un cliente pero el whatsapp no esta validado
         cl = Cliente.objects.get(email = email,whatsapp_validado = 0)
         id_cliente = cl.id
         try:
-            cl2 = Cliente.objects.get(whatsapp = whatsapp)
+            cl2 = Cliente.objects.get(codigo_cliente = cp, whatsapp = whatsapp)
             if(cl2.id != int(id_cliente)):
                 #Si el otro cliente ya ha validado el whatsapp, no puede ser validado por este cliente.
                 if(cl2.whatsapp_validado == 1):
@@ -110,6 +117,7 @@ def tokenClienteWhatsapp(request):
 
 
     cliente = Cliente.objects.get(id = id_cliente)
+    cliente.codigo_pais = cp
     cliente.whatsapp = whatsapp
     cliente.forma_autenticacion = 'W'
     cliente.save()
@@ -123,7 +131,8 @@ def tokenClienteWhatsapp(request):
 
     if(cliente.forma_autenticacion == 'W'):
         whatsapp = Whatsapp()
-        whatsapp.sendWhatsapp(cliente.token,cliente.whatsapp)
+        wapp = cliente.codigo_pais.codigo + cliente.whatsapp
+        whatsapp.sendWhatsapp(cliente.token,wapp)
     
     return Response({"estatus":"1","id_cliente":cliente.id,"forma_autenticacion":cliente.forma_autenticacion})
 
@@ -141,7 +150,6 @@ def validaTokenCliente(request):
     token = request.GET.get("token")
     id_cliente = request.GET.get("id_cliente")
     forma_autenticacion = request.GET.get("forma_autenticacion")
-    print(token)
     try:
         cliente = Cliente.objects.get(id = id_cliente,token = token)
         if(forma_autenticacion == "E"):
@@ -159,11 +167,18 @@ def validaTokenCliente(request):
         if(fecha_viaje == None):
             fecha_viaje = ''
 
+        codigo_pais = cliente.codigo_pais
+        if codigo_pais == None:
+            codigo_pais = ""
+        else:
+            codigo_pais= codigo_pais.id
+
         data = {
             "id" : cliente.id,
             "nombre" : cliente.nombre,
             "apellido_p" : cliente.apellido_p,
             "apellido_m" : cliente.apellido_m,
+            "codigo_pais": codigo_pais,
             "whatsapp" : cliente.whatsapp,
             "email" : cliente.email,
             "pais_destino" : cliente.pais_destino,
@@ -174,8 +189,8 @@ def validaTokenCliente(request):
         }
 
         return Response({"estatus":"1","data":data})
-    except:
-
+    except Exception as e:
+        print(e)
         return Response({"estatus":"0","msj":"Token incorrecto"})
     
 """
@@ -188,6 +203,7 @@ def actualizaCliente(request):
         nombre = request.data["nombre"]
         apellido_p = request.data["apellido_p"]
         apellido_m = request.data["apellido_m"]
+        codigo_pais = request.data["codigo_pais"]
         whatsapp = request.data["whatsapp"]
         email = request.data["email"]
         pais_destino = request.data["pais_destino"]
@@ -198,23 +214,31 @@ def actualizaCliente(request):
         except:
             return Response({"estatus":"0","msj":"El cliente no existe"})
         
+        
         if(nombre != ""):
             cliente.nombre = nombre
         if(apellido_p != ""):
             cliente.apellido_p = apellido_p
         if(apellido_m != ""):
             cliente.apellido_m = apellido_m
+        if(codigo_pais != ""):
+            cp = CodigoPais.objects.get(id = codigo_pais)
+            cliente.codigo_pais = cp
         if(whatsapp != ""):
+            cliente.whatsapp = whatsapp
+        if(email != ""):
             cliente.email = email
         if(pais_destino != ""):
             cliente.pais_destino = pais_destino
         if(fecha_viaje != ""):
             cliente.fecha_viaje = fecha_viaje
         
+        
         cliente.save()
         
         return Response({"estatus":"1","msj":"OK"})
     except Exception as e:
+        print("jasso")
         print(e)
         return Response({"estatus":"0","msj":"Error al actualizar el cliente."})
 

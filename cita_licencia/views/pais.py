@@ -31,9 +31,10 @@ def validaPaisDerechoAdmision(request):
         return Response({"estatus":"1","pais_derecho_admision":"1"})
     except:    
         return Response({"estatus":"1","pais_derecho_admision":"0"})
-    
+
+@api_view(["GET"])
 def getAllCodigoTelPais(request):
-    codigos = CodigoPais.objects.all().values("id","nombre","nombre_corto","codigo")
+    codigos = CodigoPais.objects.all().values("id","nombre_corto","codigo")
     return Response({"estatus":"1","data":codigos})
 
 
