@@ -80,7 +80,6 @@ def tokenClienteWhatsapp(request):
     if(whatsapp == ""):
         whatsapp = "0"
 
-    print(codigo_pais)
     try:
         cp = CodigoPais.objects.get(id = codigo_pais)
     except:
@@ -93,31 +92,41 @@ def tokenClienteWhatsapp(request):
         return Response({"estatus":"0","msj":"Debe indicar un email."})
     
     #validamos que el whatsapp no este verificado por otro cliente
-    try:
-        cl = Cliente.objects.get(codigo_pais = cp, whatsapp = whatsapp)
-        if(cl.id != int(id_cliente)):
-            if(cl.whatsapp_validado == 1):
-                return Response({"estatus":"0","msj":"El número de whatsapp fue registrado por otro cliente."})
-    except:
-        pass
+    #try:
+    #    cl = Cliente.objects.get(codigo_pais = cp, whatsapp = whatsapp)
+    #    print("cliente")
+    #    print(cl)
+    #    if(cl.id != int(id_cliente)):
+    #        if(cl.whatsapp_validado == 1):
+    #            return Response({"estatus":"0","msj":"El número de whatsapp fue registrado por otro cliente."})
+    #except Exception as e:
+    #    print(e)
+    #    print("error")
+
 
     
     #validamos que el whatsapp no este verificado por otro cliente
     try:
-        cl = Cliente.objects.get(codigo_pais = cp,whatsapp = whatsapp,email = email)
+        #Si el whatsapp y el cliente corresponden y ya estan validados
+        cl = Cliente.objects.get(codigo_pais = cp,whatsapp = whatsapp,email = email,whatsapp_validado=1)
         id_cliente = cl.id
     except:
+        print("no encontro cliente con whatsapp validado")
         #el correo esta ligado a un cliente pero el whatsapp no esta validado
         cl = Cliente.objects.get(email = email,whatsapp_validado = 0)
         id_cliente = cl.id
+        print("Cliente sin whatsapp validado")
+        print(cl)
         try:
-            cl2 = Cliente.objects.get(codigo_cliente = cp, whatsapp = whatsapp)
+            cl2 = Cliente.objects.get(codigo_pais = cp, whatsapp = whatsapp)
+            print(cl2.id)
+            print(id_cliente)
             if(cl2.id != int(id_cliente)):
                 #Si el otro cliente ya ha validado el whatsapp, no puede ser validado por este cliente.
                 if(cl2.whatsapp_validado == 1):
                     return Response({"estatus":"0","msj":"El número de whatsapp fue registrado por otro cliente."})
-        except:
-            pass  
+        except Exception as e:
+            print(e)
 
 
 
@@ -137,7 +146,8 @@ def tokenClienteWhatsapp(request):
     if(cliente.forma_autenticacion == 'W'):
         whatsapp = Whatsapp()
         wapp = cliente.codigo_pais.codigo + cliente.whatsapp
-        whatsapp.sendWhatsapp(cliente.token,wapp)
+        body = "Ingresa el siguiente codigo en el portal de citas: " + cliente.token
+        whatsapp.sendWhatsapp(body,wapp)
     
     return Response({"estatus":"1","id_cliente":cliente.id,"forma_autenticacion":cliente.forma_autenticacion})
 

@@ -262,3 +262,23 @@ def actualizaCita(request):
     cita_nueva = Cita.objects.filter(id = cita.id).values("nombre","apellido_p","apellido_m","email","whatsapp","codigo_pais__id","pais_destino__id","fecha_viaje","horario_cita","cliente")
 
     return Response({"estatus":"1","data":cita_nueva})
+
+
+@api_view(["GET"])
+def validaClienteConCita(request):
+    id_cliente = request.GET.get("id_cliente")
+
+    cliente = Cliente.objects.get(id=id_cliente)
+
+    activa = EstatusCita.objects.get(id=1)
+
+    
+    cita = Cita.objects.filter(cliente = cliente,estatus_cita = activa)
+    
+
+    if cita.count() >= 1:
+        return Response({"estatus":"0","msj":"Ya cuenta con una cita activa."})
+    else:
+        return Response({"estatus":"1"})
+    
+

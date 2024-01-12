@@ -6,8 +6,6 @@ class Whatsapp():
         
         url = settings.URL
         token = settings.TOKEN
-        print("to")
-        print(to)
         payload = "token=" + token + "&to=" + str(to) + "&body=" + str(body)
         payload = payload.encode('utf8').decode('iso-8859-1')
         headers = {'content-type': 'application/x-www-form-urlencoded'}
