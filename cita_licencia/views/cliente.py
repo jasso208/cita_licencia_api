@@ -51,7 +51,12 @@ def tokenCliente(request):
             Enviamos el email por correo
         """
         email = Email()
-        email.sendMail(cliente.token,cliente.email,"Citas ANA: Valida tu email")
+        body = email.plantillaEnvioToken(cliente.token)
+        err = email.sendMail(body,cliente.email,"Citas ANA: Valida tu email")
+        
+        if err != "":
+            error = "Error al enviar codigo de autenticación: " + err
+            return Response({"estatus":"0","msj":error})
 
     return Response({"estatus":"1","id_cliente":cliente.id,"forma_autenticacion":cliente.forma_autenticacion})
 
