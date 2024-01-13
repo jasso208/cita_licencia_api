@@ -37,8 +37,9 @@ class Email():
 
 
 
-def plantillaEnvioToken(self,token):
-    html = '''<!DOCTYPE html>
+    def plantillaEnvioToken(self,token):
+        html = '''
+<!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
   <meta charset="utf-8">
@@ -141,31 +142,30 @@ def plantillaEnvioToken(self,token):
 </body>
 </html>
 '''.format(token)
+        html = html.replace("\xa1", "")
+        html = html.replace("\xbf", "")
+        html = html.replace("\xd1", "N")
+        html = html.replace("\xdc", "U")
+        html = html.replace("\xf1", "n")
+        html = html.replace("\x0a", "\n")
 
-    html = html.replace("\xa1", "")
-    html = html.replace("\xbf", "")
-    html = html.replace("\xd1", "N")
-    html = html.replace("\xdc", "U")
-    html = html.replace("\xf1", "n")
-    html = html.replace("\x0a", "\n")
-
-    html = html.replace("\xe1", "a")
-    html = html.replace("\xe9", "e")
-    html = html.replace("\xed", "i")
-    html = html.replace("\xf3", "o")
-    html = html.replace("\xfa", "u")
+        html = html.replace("\xe1", "a")
+        html = html.replace("\xe9", "e")
+        html = html.replace("\xed", "i")
+        html = html.replace("\xf3", "o")
+        html = html.replace("\xfa", "u")
 
 
-    html = html.replace("\xc1", "A")
-    html = html.replace("\xc9", "E")
-    html = html.replace("\xcd", "I")
-    html = html.replace("\xd3", "O")
-    html = html.replace("\xda", "U")
+        html = html.replace("\xc1", "A")
+        html = html.replace("\xc9", "E")
+        html = html.replace("\xcd", "I")
+        html = html.replace("\xd3", "O")
+        html = html.replace("\xda", "U")
 
-    return html
+        return html
 
-def plantillaConfirmacionCita(self,cita):
-    html = '''
+    def plantillaConfirmacionCita(self,cita):
+        html = '''
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
@@ -300,24 +300,24 @@ def plantillaConfirmacionCita(self,cita):
 </body>
 </html>
 '''.format(cita.cliente.nombre, cita.cliente.apellido_p, cita.cliente.apellido_m)
-    
-    html = html.replace("\xa1", "")
-    html = html.replace("\xbf", "")
-    html = html.replace("\xd1", "N")
-    html = html.replace("\xdc", "U")
-    html = html.replace("\xf1", "n")
-    html = html.replace("\x0a", "\n")
+        
+        html = html.replace("\xa1", "")
+        html = html.replace("\xbf", "")
+        html = html.replace("\xd1", "N")
+        html = html.replace("\xdc", "U")
+        html = html.replace("\xf1", "n")
+        html = html.replace("\x0a", "\n")
 
-    html = html.replace("\xe1", "a")		
-    html = html.replace("\xe9", "e")		
-    html = html.replace("\xed", "i")		
-    html = html.replace("\xf3", "o")				
-    html = html.replace("\xfa", "u")
+        html = html.replace("\xe1", "a")		
+        html = html.replace("\xe9", "e")		
+        html = html.replace("\xed", "i")		
+        html = html.replace("\xf3", "o")				
+        html = html.replace("\xfa", "u")
 
-    html = html.replace("\xc1", "A")		
-    html = html.replace("\xc9", "E")		
-    html = html.replace("\xcd", "I")		
-    html = html.replace("\xd3", "O")				
-    html = html.replace("\xda", "U")
+        html = html.replace("\xc1", "A")		
+        html = html.replace("\xc9", "E")		
+        html = html.replace("\xcd", "I")		
+        html = html.replace("\xd3", "O")				
+        html = html.replace("\xda", "U")
 
-    return html
+        return html
