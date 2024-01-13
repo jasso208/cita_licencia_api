@@ -8,6 +8,9 @@ from django.core.paginator import Paginator
 from cita_licencia.models.pais import Pais
 from cita_licencia.models.codigo_pais import CodigoPais
 
+from cita_licencia.utils.email import Email
+
+from cita_licencia.utils.whatsapp import Whatsapp
 import datetime
 
 """
@@ -91,6 +94,17 @@ def generaCita(request):
     hora_cita.save()
 
     cita_nueva = Cita.objects.filter(id = cita.id).values("nombre","apellido_p","apellido_m","email","whatsapp","codigo_pais__id","pais_destino","fecha_viaje","horario_cita","cliente")
+
+
+    #Envia confirmación de cita
+    email = Email()
+    body = email.plantillaConfirmacionCita(cita);
+    err = email.sendMail(body,cliente.email,"Confirmación de cita")
+        
+    whatsapp = Whatsapp()
+    wapp = cliente.codigo_pais.codigo + cliente.whatsapp
+    body = "Se agendo su cita para el dia  " + cita.horario_cita.fecha.fecha.strftime('%Y-%m-%d') + " de " +cita.horario_cita.horario
+    whatsapp.sendWhatsapp(body,wapp)
 
     return Response({"estatus":"1","data":cita_nueva})
 
