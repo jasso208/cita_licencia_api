@@ -5,8 +5,12 @@ from cita_licencia.models.horario_dia import HorarioDia
 from cita_licencia.models.cita import Cita
 from cita_licencia.models.estatus_cita import EstatusCita
 from django.core.paginator import Paginator
+from cita_licencia.models.pais import Pais
+from cita_licencia.models.codigo_pais import CodigoPais
 
+from cita_licencia.utils.email import Email
 
+from cita_licencia.utils.whatsapp import Whatsapp
 import datetime
 
 """
@@ -30,6 +34,7 @@ def generaCita(request):
     nombre = request.data["nombre"]
     apellido_p = request.data["apellido_p"]
     apellido_m = request.data["apellido_m"]
+    codigo_pais = request.data["codigo_pais"]
     whatsapp = request.data["whatsapp"]
     email = request.data["email"]
     pais_destino = request.data["pais_destino"]
@@ -45,21 +50,39 @@ def generaCita(request):
     except:
         return Response({"estatus":"0","msj":"Error al generar la cita. Horario no disponible."})
     
+
+    wcoi = cliente.codigo_pais.codigo + cliente.whatsapp
+
+    cp = CodigoPais
+    try:
+        cp = CodigoPais.objects.get(id = codigo_pais)
+    except:
+        pass
+    
+    wcoip = cp.codigo + whatsapp
+
     if(cliente.whatsapp != None and cliente.whatsapp != 0):
-        if(str(cliente.whatsapp).strip() != whatsapp.strip() or cliente.email.strip() != email.strip()):
+        #if(str(cliente.whatsapp).strip() != whatsapp.strip() or cliente.email.strip() != email.strip()):
+        if(wcoip.strip() != wcoi.strip() or cliente.email.strip() != email.strip()):
             return Response({"estatus":"0","msj":"El email y/o whatsapp no corresponden con el cliente indicado."})
     else:
         if(cliente.email.strip() != email.strip()):
             return Response({"estatus":"0","msj":"El email no corresponden con el cliente indicado."})
     
-    
+    try:
+        print(pais_destino)
+        pais = Pais.objects.get(id = pais_destino)
+    except:
+        return Response({"estatus":"0","msj":"País no valido."})
+
     cita = Cita()
     cita.nombre = nombre
     cita.apellido_p = apellido_p
     cita.apellido_m = apellido_m
+    cita.codigo_pais = cp
     cita.whatsapp = whatsapp
     cita.email = email
-    cita.pais_destino = pais_destino
+    cita.pais_destino = pais
     cita.fecha_viaje = fecha_viaje
     cita.cliente = cliente
     cita.horario_cita = hora_cita
@@ -70,7 +93,18 @@ def generaCita(request):
     hora_cita.disponible = 0
     hora_cita.save()
 
-    cita_nueva = Cita.objects.filter(id = cita.id).values("nombre","apellido_p","apellido_m","email","whatsapp","pais_destino","fecha_viaje","horario_cita","cliente")
+    cita_nueva = Cita.objects.filter(id = cita.id).values("nombre","apellido_p","apellido_m","email","whatsapp","codigo_pais__id","pais_destino","fecha_viaje","horario_cita","cliente")
+
+
+    #Envia confirmación de cita
+    email = Email()
+    body = email.plantillaConfirmacionCita(cita);
+    err = email.sendMail(body,cliente.email,"Confirmación de cita")
+        
+    whatsapp = Whatsapp()
+    wapp = cliente.codigo_pais.codigo + cliente.whatsapp
+    body = "Se agendo su cita para el dia  " + cita.horario_cita.fecha.fecha.strftime('%Y-%m-%d') + " de " +cita.horario_cita.horario
+    whatsapp.sendWhatsapp(body,wapp)
 
     return Response({"estatus":"1","data":cita_nueva})
 
@@ -81,8 +115,7 @@ def generaCita(request):
 def consultaCita(request):
     id_cita = request.GET.get("id_cita")
     
-    print(id_cita)
-    cita = Cita.objects.filter(id = id_cita).values("nombre","apellido_p","apellido_m","email","whatsapp","pais_destino","fecha_viaje","horario_cita__id","horario_cita__horario","horario_cita__fecha__fecha","cliente")
+    cita = Cita.objects.filter(id = id_cita).values("nombre","apellido_p","apellido_m","email","whatsapp","codigo_pais__id","pais_destino__id","fecha_viaje","horario_cita__id","horario_cita__horario","horario_cita__fecha__fecha","cliente")
     
     return Response({"estatus":"1","data":cita})
 
@@ -114,12 +147,11 @@ def getCitas(request):
             c.estatus_cita = EstatusCita.objects.get(id = 2) # vencida
             c.save()
 
-    print(solo_activas)
     if(solo_activas == "true"):
         estatus_activo = EstatusCita.objects.get(id = 1)
-        citas = Cita.objects.filter(cliente = cliente,estatus_cita = estatus_activo).values("id","fecha_viaje","horario_cita__fecha__fecha","horario_cita__horario","pais_destino","estatus_cita__estatus","estatus_cita__id").order_by("estatus_cita__id","-horario_cita__fecha__fecha","horario_cita__horario","-id")
+        citas = Cita.objects.filter(cliente = cliente,estatus_cita = estatus_activo).values("id","fecha_viaje","horario_cita__fecha__fecha","horario_cita__horario","pais_destino__descripcion","estatus_cita__estatus","estatus_cita__id").order_by("estatus_cita__id","-horario_cita__fecha__fecha","horario_cita__horario","-id")
     else:
-        citas = Cita.objects.filter(cliente = cliente).values("id","fecha_viaje","horario_cita__fecha__fecha","horario_cita__horario","pais_destino","estatus_cita__estatus","estatus_cita__id").order_by("estatus_cita__id","-horario_cita__fecha__fecha","horario_cita__horario","-id")
+        citas = Cita.objects.filter(cliente = cliente).values("id","fecha_viaje","horario_cita__fecha__fecha","horario_cita__horario","pais_destino__descripcion","estatus_cita__estatus","estatus_cita__id").order_by("estatus_cita__id","-horario_cita__fecha__fecha","horario_cita__horario","-id")
     
     p = Paginator(citas,5)
 
@@ -160,9 +192,9 @@ def getAllCitas(request):
 
     if(solo_activas == "true"):
         estatus_activo = EstatusCita.objects.get(id = 1)
-        citas = Cita.objects.filter(horario_cita__fecha__fecha = fecha,estatus_cita = estatus_activo).values("id","fecha_viaje","horario_cita__fecha__fecha","horario_cita__horario","pais_destino","estatus_cita__estatus","estatus_cita__id").order_by("estatus_cita__id","-horario_cita__fecha__fecha","horario_cita__horario","-id")
+        citas = Cita.objects.filter(horario_cita__fecha__fecha = fecha,estatus_cita = estatus_activo).values("id","fecha_viaje","horario_cita__fecha__fecha","horario_cita__horario","pais_destino__descripcion","estatus_cita__estatus","estatus_cita__id").order_by("estatus_cita__id","-horario_cita__fecha__fecha","horario_cita__horario","-id")
     else:
-        citas = Cita.objects.filter(horario_cita__fecha__fecha = fecha).values("id","fecha_viaje","horario_cita__fecha__fecha","horario_cita__horario","pais_destino","estatus_cita__estatus","estatus_cita__id").order_by("estatus_cita__id","-horario_cita__fecha__fecha","horario_cita__horario","-id")
+        citas = Cita.objects.filter(horario_cita__fecha__fecha = fecha).values("id","fecha_viaje","horario_cita__fecha__fecha","horario_cita__horario","pais_destino__descripcion","estatus_cita__estatus","estatus_cita__id").order_by("estatus_cita__id","-horario_cita__fecha__fecha","horario_cita__horario","-id")
     
     p = Paginator(citas,5)
 
@@ -209,6 +241,12 @@ def actualizaCita(request):
     else:
         hora_cita = cita.horario_cita
 
+
+    try:
+        pais = Pais.objects.get(id = pais_destino)
+    except:
+        return Response({"estatus":"0","msj":"Pais no valido."})
+
     #Volvemos a poner disponible la el horario que tenia la cita
     cita.horario_cita.disponible = 1
     cita.horario_cita.cliente_reserva = None
@@ -216,7 +254,6 @@ def actualizaCita(request):
 
 
     if(cancelar_cita == 1):
-        print("cancelar cita")
         cita.estatus_cita = EstatusCita.objects.get(id=3)  #cancelada
         cita.save()
         return Response({"estatus":"1","msj":"Cita cancelada correctamente."})
@@ -226,7 +263,7 @@ def actualizaCita(request):
     cita.apellido_m = apellido_m
     #cita.whatsapp = whatsapp
     #cita.email = email
-    cita.pais_destino = pais_destino
+    cita.pais_destino = pais
     cita.fecha_viaje = fecha_viaje
     cita.horario_cita = hora_cita
     cita.estatus_cita = EstatusCita.objects.get(id=1) #activa
@@ -236,6 +273,26 @@ def actualizaCita(request):
     hora_cita.disponible = 0
     hora_cita.save()
 
-    cita_nueva = Cita.objects.filter(id = cita.id).values("nombre","apellido_p","apellido_m","email","whatsapp","pais_destino","fecha_viaje","horario_cita","cliente")
+    cita_nueva = Cita.objects.filter(id = cita.id).values("nombre","apellido_p","apellido_m","email","whatsapp","codigo_pais__id","pais_destino__id","fecha_viaje","horario_cita","cliente")
 
     return Response({"estatus":"1","data":cita_nueva})
+
+
+@api_view(["GET"])
+def validaClienteConCita(request):
+    id_cliente = request.GET.get("id_cliente")
+
+    cliente = Cliente.objects.get(id=id_cliente)
+
+    activa = EstatusCita.objects.get(id=1)
+
+    
+    cita = Cita.objects.filter(cliente = cliente,estatus_cita = activa)
+    
+
+    if cita.count() >= 1:
+        return Response({"estatus":"0","msj":"Ya cuenta con una cita activa."})
+    else:
+        return Response({"estatus":"1"})
+    
+

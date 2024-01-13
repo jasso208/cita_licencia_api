@@ -4,6 +4,7 @@ from django.conf import settings
 class Whatsapp():
     def sendWhatsapp(self,body,to):
         
+        print(to)
         url = settings.URL
         token = settings.TOKEN
         payload = "token=" + token + "&to=" + str(to) + "&body=" + str(body)
