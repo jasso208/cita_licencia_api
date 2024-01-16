@@ -221,7 +221,7 @@ class Email():
         html = html + '            <tr>'
         html = html + '              <td style="padding:30px;background-color:#ffffff;">'
         html = html + '                <h1 style="margin-top:0;margin-bottom:16px;font-size:26px;line-height:32px;font-weight:bold;letter-spacing:-0.02em;text-align:center;">¡¡Felicidades, ya diste el primer paso!!</h1>'
-        html = html + '                <p style="margin:0;">Hola!! '+ cita.cliente.nombre + ' ' + cita.cliente.apellido_p + ' ' + cita.cliente.apellido_m + ' Se ha generado correctamente tu cita para el tramite de Licencia Internacional, del sitio web <a href="https://www.licenciainternacional.com.mx/" style="color:#C0392B;text-decoration:underline;">Licencia Internacional ANA Automóvil Club de México A. C.</a></p>'
+        html = html + '                <p style="margin:0;">Hola!! '+ cita.nombre + ' ' + cita.apellido_p + ' ' + cita.apellido_m + ' Se ha generado correctamente tu cita para el tramite de Licencia Internacional, del sitio web <a href="https://www.licenciainternacional.com.mx/" style="color:#C0392B;text-decoration:underline;">Licencia Internacional ANA Automóvil Club de México A. C.</a></p>'
         html = html + '              </td>'
         html = html + '            </tr>'
         html = html + '            '

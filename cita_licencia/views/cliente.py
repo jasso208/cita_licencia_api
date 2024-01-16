@@ -2,12 +2,13 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from cita_licencia.models.cliente import Cliente
+from cita_licencia.models.cita import Cita
 
 from cita_licencia.utils.token import Token
 from cita_licencia.utils.email import Email
 from cita_licencia.utils.whatsapp import Whatsapp
 from cita_licencia.models.codigo_pais import CodigoPais
-
+import random
 """
     Genera token y lo envia por correo
     Mejora pendiente: se deben ingresar ambos: whatsapp y correo electronico
@@ -166,9 +167,14 @@ def validaTokenCliente(request):
     id_cliente = request.GET.get("id_cliente")
     forma_autenticacion = request.GET.get("forma_autenticacion")
     try:
+        #Si encuentra el cliente, la autenticación fue correcta.
         cliente = Cliente.objects.get(id = id_cliente,token = token)
+
+
+
         if(forma_autenticacion == "E"):
             cliente.email_validado = 1
+            cliente.session = str(random.randint(1000000000, 9999999999))
         
         if(forma_autenticacion == "W"):
             cliente.whatsapp_validado = 1
@@ -200,7 +206,8 @@ def validaTokenCliente(request):
             "fecha_viaje" : fecha_viaje,
             "whatsapp_validado":cliente.whatsapp_validado,
             "email_validado":cliente.email_validado,
-            "administrador":cliente.administrador
+            "administrador":cliente.administrador,
+            "session":cliente.session
         }
 
         return Response({"estatus":"1","data":data})
@@ -222,14 +229,25 @@ def actualizaCliente(request):
         whatsapp = request.data["whatsapp"]
         email = request.data["email"]
         pais_destino = request.data["pais_destino"]
-        fecha_viaje = request.data["fecha_viaje"]
+        fecha_viaje = request.data["fecha_viaje"]        
+        id_cita = request.data["id_cita"]
+
+        if id_cita == None or id_cita == '' :
+            id_cita = 0
+
+        
         
         try:
-            cliente = Cliente.objects.get(id = id)
-        except:
+            if id_cita != 0:
+                cliente = Cita.objects.get(id = int(id_cita)).cliente
+            else:
+                cliente = Cliente.objects.get(id = id)
+        except Exception as e:
+            print("Exception: " + str(e))
             return Response({"estatus":"0","msj":"El cliente no existe"})
         
-        
+        print("cliente")
+        print(cliente)
         if(nombre != ""):
             cliente.nombre = nombre
         if(apellido_p != ""):
@@ -252,9 +270,8 @@ def actualizaCliente(request):
         cliente.save()
         
         return Response({"estatus":"1","msj":"OK"})
-    except Exception as e:
-        print("jasso")
-        print(e)
+    except Exception as e:        
+        print("Exception " + str(e))
         return Response({"estatus":"0","msj":"Error al actualizar el cliente."})
 
 
@@ -267,3 +284,16 @@ def validaClienteAdmin(request):
         return Response({"estatus":"1","admin":cliente.administrador})
     except:
         return Response({"estatus":"0","msj":"Error al consultar el cliente."})
+    
+@api_view(["GET"])
+def validaPerfilSession(request):
+    session = request.GET.get("session")
+    id_cliente = request.GET.get("id_cliente")
+
+    #Valida que el cliente corresponda a la session
+    try:
+        cliente = Cliente.objects.get(id = id_cliente, session = int(session))
+    except:
+        return Response({"estatus":"0","msj":"Error al validar la session."})
+    
+    return Response({"estatus":"1","administrador":cliente.administrador})

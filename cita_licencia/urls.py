@@ -6,11 +6,15 @@ from .views.cliente import tokenClienteWhatsapp
 from .views.cliente import actualizaCliente
 from .views.cliente import validaTokenCliente
 from .views.cliente import validaClienteAdmin
+from .views.cliente import validaPerfilSession
+
+
 
 from .views.calendario import cargaDiasMes
 from .views.calendario import getHorariosLibres
 
 from .views.cita import generaCita
+from .views.cita import generaCitaAdministrador
 from .views.cita import getCitas
 from .views.cita import consultaCita
 from .views.cita import actualizaCita
@@ -31,6 +35,7 @@ urlpatterns = [
     path("cliente/validaTokenCliente",validaTokenCliente),
     path("cliente/actualizaCliente",actualizaCliente),
     path("cliente/validaClienteAdmin",validaClienteAdmin),
+    path("cliente/validaPerfilSession",validaPerfilSession),
     
 
     
@@ -40,6 +45,7 @@ urlpatterns = [
 
     #cita
     path("cita/generaCita",generaCita),
+    path("cita/generaCitaAdministrador",generaCitaAdministrador),
     path("cita/getCitas",getCitas),
     path("cita/getAllCitas",getAllCitas),
     path("cita/consultaCita",consultaCita),

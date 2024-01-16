@@ -5,9 +5,19 @@ from rest_framework.response import Response
 from cita_licencia.models.pais_derecho_admision import PaisDerechoAdmision
 from cita_licencia.models.pais import Pais
 from cita_licencia.models.codigo_pais import CodigoPais
+from cita_licencia.models.pais_no_destino import PaisNoDestino
 @api_view(["GET"])
 def getAllPais(request):
-    catP = Pais.objects.all().values("id","cve_pais","descripcion")
+
+    pa = PaisNoDestino.objects.all()
+
+    lp = []
+
+    for p in pa:
+        lp.append(p.pais.id)
+
+    catP = Pais.objects.exclude(id__in = lp).values("id","cve_pais","descripcion")
+
 
     return Response ({"estatus":"1","data":catP})
 

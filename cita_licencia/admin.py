@@ -8,6 +8,7 @@ from .models.estatus_cita import EstatusCita
 from .models.pais import Pais
 from .models.pais_derecho_admision import PaisDerechoAdmision
 from .models.codigo_pais import CodigoPais
+from .models.pais_no_destino import PaisNoDestino
 
 admin.site.register(Cliente)
 admin.site.register(Calendario)
@@ -17,4 +18,5 @@ admin.site.register(Cita)
 admin.site.register(EstatusCita)
 admin.site.register(Pais)
 admin.site.register(PaisDerechoAdmision)
+admin.site.register(PaisNoDestino)
 admin.site.register(CodigoPais)
