@@ -44,7 +44,7 @@ def cargaDiasMes(request):
 def getHorariosLibres(request):
     fecha = request.GET.get("fecha")
     fechac = Calendario.objects.get(fecha = fecha)
-    hr = HorarioDia.objects.filter(fecha = fechac,disponible = 1,cliente_reserva = None).values("id","horario")
+    hr = HorarioDia.objects.filter(fecha = fechac,disponible = 1,cliente_reserva = None).values("id","horario","consecutivo")
     return Response({"estatus":"1","data":hr})
 
 
