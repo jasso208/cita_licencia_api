@@ -2,6 +2,7 @@
 from django.conf import settings
 import smtplib
 import email.message
+from email.mime.text import MIMEText
 
 class Email():
     """
@@ -13,6 +14,8 @@ class Email():
     """
     def sendMail(self,body,email_cliente,asunto):
         try:
+            
+            #   body="bats\xc3\xa0"
             server = smtplib.SMTP('smtp.gmail.com:587')
             msg = email.message.Message()
             msg['Subject'] = asunto
@@ -20,16 +23,24 @@ class Email():
             msg['From']=settings.EMAIL_HOST_USER
             msg['To']=email_cliente
             password = settings.EMAIL_HOST_PASSWORD
-            print(password)
+
             msg.add_header('Content-Type', 'text/html')
+
+            #body = unicode(body, 'latin-1')
+
+            #coding = 'utf-8'
+           
+            #msg = MIMEText(body, 'plain', coding)
 
             msg.set_payload(body)
             s = smtplib.SMTP('smtp.gmail.com:587')
             s.starttls()
             # Login Credentials for sending the mail
             s.login(msg['From'], password)
-            s.sendmail(msg['From'], [msg['To']], msg.as_string())
-        except Exception as e:            
+            s.sendmail(msg['From'], [msg['To']], msg.as_string().encode("latin-1"))
+        except Exception as e:  
+            print("error jasso")    
+            print(str(e))      
             return str(e)
         return ""
     
@@ -143,26 +154,6 @@ class Email():
         html = html + '</html>'
 
 
-        html = html.replace("\xa1", "")
-        html = html.replace("\xbf", "")
-        html = html.replace("\xd1", "N")
-        html = html.replace("\xdc", "U")
-        html = html.replace("\xf1", "n")
-        html = html.replace("\x0a", "\n")
-
-        html = html.replace("\xe1", "a")		
-        html = html.replace("\xe9", "e")		
-        html = html.replace("\xed", "i")		
-        html = html.replace("\xf3", "o")				
-        html = html.replace("\xfa", "u")
-
-
-        html = html.replace("\xc1", "A")		
-        html = html.replace("\xc9", "E")		
-        html = html.replace("\xcd", "I")		
-        html = html.replace("\xd3", "O")				
-        html = html.replace("\xda", "U")
-
         return html
     
     def plantillaConfirmacionCita(self,cita):
@@ -240,13 +231,13 @@ class Email():
         html = html + '                <td style="width:395px;padding-bottom:20px;" valign="top">'
         html = html + '                <![endif]-->'
         html = html + '                <div class="col-lge" style="display:inline-block;width:100%;max-width:395px;vertical-align:top;padding-bottom:20px;font-family:Arial,sans-serif;font-size:16px;line-height:22px;color:#363636;">'
-        html = html + '                  <p style="margin-top:0;margin-bottom:12px;">Si recibiste este mail es por que generaste una cita y tu informacion nos llego correctamente.</p>'
+        html = html + '                  <p style="margin-top:0;margin-bottom:12px;">Si recibiste este mail es por que generaste una cita y tu información nos llego correctamente.</p>'
         html = html + '                  <p>Es importante que cuente con la siguiente información:</p>'
         html = html + ''
         html = html + '                  <p>La Licencia Internacional tiene de vigencia de un año no hay por un periodo mayor, si su licencia mexicana vence antes, su Licencia Internacional tendrá  esta misma fecha de vencimiento.</p>'
         html = html + ''
-        html = html + '                  <p> La Licencia Internacional es aceptada en más de 180 países, excepto ASIA (China, Japón, Tailandia, Corea, Filipinas, Malasia, Singapur, Laos, Vietnam, Indonesia) IRLANDA, BOLIVIA Y PARAGUAY. Si usted viaja a alguno de estos países, puedes cancelar su cita o puedes solicitar mas informacion acerca  del trámite.</p>'
-        html = html + ''
+        #html = html + '                  <p> La Licencia Internacional es aceptada en más de 180 países, excepto ASIA (China, Japón, Tailandia, Corea, Filipinas, Malasia, Singapur, Laos, Vietnam, Indonesia) IRLANDA, BOLIVIA Y PARAGUAY. Si usted viaja a alguno de estos países, puedes cancelar su cita o puedes solicitar mas información acerca  del trámite.</p>'
+        #html = html + ''
         html = html + '                  <p> Para el trámite del PIC debe presentar una copia a color de:</p>'
         html = html + '                     '
         html = html + '                     <br> PASAPORTE CON VIGENCIA MINIMA DE UN AÑO'
@@ -260,7 +251,7 @@ class Email():
         html = html + ''
         html = html + '                     <p>El pago es en efectivo a la entrega de su PIC y tiene un año de vigencia.</p>'
         html = html + '                     '
-        html = html + '                     <p>La Dirección es: Durango 81-402, Col. Roma Norte, CDMX</p>'
+        html = html + '                     <p>La Dirección es: Calle Durango 81, Col. Roma Norte, Ciudad de México CDMX, México (<a href="https://www.google.com/maps/search/ANA%20Autom%C3%B3vil%20Club/@19.4214992523193,-99.1587982177734,17z">Ver Mapa</a>)</p>'
         html = html + ''
         html = html + '                     <p>Saludos y seguimos a sus órdenes.</p>'
         html = html + ''
@@ -301,26 +292,6 @@ class Email():
         html = html + '</body>'
         html = html + '</html>'
 
-        
-        html = html.replace("\xa1", "")
-        html = html.replace("\xbf", "")
-        html = html.replace("\xd1", "N")
-        html = html.replace("\xdc", "U")
-        html = html.replace("\xf1", "n")
-        html = html.replace("\x0a", "\n")
-
-        html = html.replace("\xe1", "a")		
-        html = html.replace("\xe9", "e")		
-        html = html.replace("\xed", "i")		
-        html = html.replace("\xf3", "o")				
-        html = html.replace("\xfa", "u")
-
-
-        html = html.replace("\xc1", "A")		
-        html = html.replace("\xc9", "E")		
-        html = html.replace("\xcd", "I")		
-        html = html.replace("\xd3", "O")				
-        html = html.replace("\xda", "U")
-
+ 
         return html
     
