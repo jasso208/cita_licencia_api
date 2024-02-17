@@ -25,6 +25,7 @@ from .views.pais import getAllPais
 from .views.pais import validaPaisDerechoAdmision
 from .views.pais import getAllCodigoTelPais
 
+from .webhook.cita import wh_confirmacita
 
 urlpatterns = [
     path("allClientes",viewsr.getClientes),
@@ -51,6 +52,10 @@ urlpatterns = [
     path("cita/consultaCita",consultaCita),
     path("cita/actualizaCita",actualizaCita),
     path("cita/validaClienteConCita",validaClienteConCita),
+    path("cita/wh_confirmacita",wh_confirmacita),
+
+
+    
 
  
 
