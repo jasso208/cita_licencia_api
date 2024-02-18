@@ -107,7 +107,7 @@ def generaCita(request):
     
     body = whatsapp.msjConfirmacionCita(cita)
     
-    whatsapp.sendWhatsapp(body,wapp)
+    idmsj = whatsapp.sendWhatsapp(body,wapp)
 
     return Response({"estatus":"1","data":cita_nueva})
 
@@ -255,7 +255,7 @@ def generaCitaAdministrador(request):
     wapp = cliente.codigo_pais.codigo + cliente.whatsapp
     #body = "Se agendo su cita para el dia  " + cita.horario_cita.fecha.fecha.strftime('%Y-%m-%d') + " de " +cita.horario_cita.horario
     body = whatsapp.msjConfirmacionCita(cita)
-    whatsapp.sendWhatsapp(body,wapp)
+    idmsg= whatsapp.sendWhatsapp(body,wapp)
 
     return Response({"estatus":"1","data":cita_nueva})
 

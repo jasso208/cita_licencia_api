@@ -4,9 +4,7 @@ from django.conf import settings
 
 class Whatsapp():
     def sendWhatsapp(self,body,to):
-        
 
-        
         url = settings.URL
         token = settings.TOKEN
         payload = "token=" + token + "&to=" + str(to) + "&body=" + str(body)
@@ -19,7 +17,33 @@ class Whatsapp():
 
         response = requests.request("POST", url, data=payload, headers=headers)
         
-        print(response.text)
+        return response.json()["id"]
+
+    def getClientId(self,idmsj):
+        url = settings.URLMESSAGES
+        token = settings.TOKEN
+
+        querystring = {
+            "token": token,
+            "page": 1,
+            "limit": 10,
+            "status": "all",
+            "sort": "desc",
+            "id": idmsj,
+            "referenceId": "",
+            "from": "",
+            "to": "",
+            "ack": "",
+            "msgId": "",
+            "start_date": "",
+            "end_date": ""
+        }
+
+        headers = {'content-type': 'application/x-www-form-urlencoded'}
+
+        response = requests.request("GET", url, headers=headers, params=querystring)
+        return response.json()["messages"][0]["to"]
+        
 
     def msjConfirmacionCita(self,cita):
         body = ""

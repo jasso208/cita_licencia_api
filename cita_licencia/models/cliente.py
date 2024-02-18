@@ -12,6 +12,7 @@ class Cliente(models.Model):
     email = models.EmailField(max_length = 200,null  = True,blank = True)
     email_validado = models.IntegerField(default = 0) #1 para indicar que ya se valido  el email
     pais_destino = models.CharField(max_length = 50,default = "")
+    cliente_w = models.CharField(max_length = 100,null = True,blank = True)
     fecha_viaje = models.DateField(null  = True,blank = True)
     token = models.CharField(max_length = 14,null = True,blank = True)
     forma_autenticacion = models.CharField(max_length = 1,null = True, blank = True)

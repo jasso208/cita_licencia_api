@@ -17,6 +17,8 @@ class Cita(models.Model):
     pais_destino =models.ForeignKey(Pais,null = True,blank = True,on_delete = models.PROTECT)
     fecha_viaje = models.DateField(null  = True,blank = True)
     estatus_cita = models.ForeignKey(EstatusCita,null = True, blank = True,on_delete = models.PROTECT)
+    espera_confirmacion = models.IntegerField(default = 0)
+    cita_confirmada = models.IntegerField(default = 0)
 
   
 
