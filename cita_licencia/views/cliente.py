@@ -148,8 +148,10 @@ def tokenClienteWhatsapp(request):
         whatsapp = Whatsapp()
         wapp = cliente.codigo_pais.codigo + cliente.whatsapp
         body = "Ingresa el siguiente codigo en el portal de citas: " + cliente.token
-        whatsapp.sendWhatsapp(body,wapp)
-    
+        idmsg = whatsapp.sendWhatsapp(body,wapp)
+        clientew = whatsapp.getClientId(idmsg)
+        cliente.cliente_w = clientew
+        cliente.save()
     return Response({"estatus":"1","id_cliente":cliente.id,"forma_autenticacion":cliente.forma_autenticacion})
 
 
