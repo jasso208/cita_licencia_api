@@ -7,6 +7,7 @@ from cita_licencia.utils.whatsapp import Whatsapp
 
 @api_view(["POST"])
 def wh_confirmacita(request):
+    print("jasso")
     clientew = request.data["data"]["from"]
 
     body = request.data["data"]["body"]
