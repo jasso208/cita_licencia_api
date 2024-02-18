@@ -9,11 +9,13 @@ from cita_licencia.utils.whatsapp import Whatsapp
 def wh_confirmacita(request):
     print("jasso")
     clientew = request.data["data"]["from"]
-
+    print(clientew)
     body = request.data["data"]["body"]
     try:
         cliente = Cliente.objects.get(cliente_w = clientew)
     except Exception as e:
+        print(str(e))
+        print("no cliente")
         return Response({"NO CLIENTE"})
     
     estatusa = EstatusCita.objects.get(id = 1)
